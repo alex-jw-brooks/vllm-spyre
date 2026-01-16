@@ -73,8 +73,8 @@ logger = init_logger(__name__)
 
 @dataclass(frozen=True)
 class ModelForwardInputs:
-    input_tokens: torch.Tensor | None = None # For non multimodal
-    input_embeds: torch.Tensor | None = None # For multimodal
+    input_tokens: torch.Tensor | None = None  # For non multimodal
+    input_embeds: torch.Tensor | None = None  # For multimodal
     input_positions: torch.Tensor | None = None
     input_masks: torch.Tensor | None = None
     is_prompt: bool = False
@@ -577,9 +577,11 @@ class SpyreModelRunner(
 
         attn_metadata = self.build_attn_metadata(model_input)
         # Embeddings take priority [used by multimodal models only]
-        input_ids_or_embeds = (model_input.input_embeds
-                               if model_input.input_embeds is not None else
-                               model_input.input_tokens)
+        input_ids_or_embeds = (
+            model_input.input_embeds
+            if model_input.input_embeds is not None
+            else model_input.input_tokens
+        )
 
         # Execute the model
         with set_forward_context(attn_metadata, self.vllm_config):
@@ -1495,7 +1497,6 @@ class ContinuousBatchingSpyreModelRunner(SpyreModelRunner):
             else:
                 torch._dynamo.mark_dynamic(model_input.input_tokens, 0)
                 torch._dynamo.mark_static(model_input.input_tokens, 1)  # always 1
-
 
     def build_input_batch(self) -> SamplingInputBatch:
         # Define logits processors.
@@ -2542,9 +2543,11 @@ class ChunkedPrefillModelRunner(ContinuousBatchingSpyreModelRunner):
         if not is_cached_chunk:
             attn_metadata = self.build_attn_metadata(model_input)
             # Embeddings take priority [used by multimodal models only]
-            input_ids_or_embeds = (model_input.input_embeds
-                                   if model_input.input_embeds is not None else
-                                   model_input.input_tokens)
+            input_ids_or_embeds = (
+                model_input.input_embeds
+                if model_input.input_embeds is not None
+                else model_input.input_tokens
+            )
 
             # Execute the model
             with set_forward_context(attn_metadata, self.vllm_config):
