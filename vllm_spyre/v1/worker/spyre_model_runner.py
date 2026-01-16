@@ -184,6 +184,7 @@ class BaseSpyreModelRunner(ABC, Generic[InputBatchT, RequestStateT, ModelInputsT
     def get_model(self) -> nn.Module:
         return self.model
 
+    @property
     def is_multimodal(self) -> bool:
         """Indicates whether or not a model is multimodal.
         This should not be called until after the model is loaded.
